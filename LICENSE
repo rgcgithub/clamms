@@ -1,0 +1,25 @@
+Copyright (c) 2015 Regeneron Genetics Center LLC
+
+License:
+
+Permission is hereby granted, free of charge, by Regeneron Genetics Center LLC (the “Licensor”) to any person obtaining a copy of this software (“you”) and any associated documentation files (the "Software"), to publish, copy and redistribute this material in any medium or format, and to adapt the Software ("Adaptations"). 
+
+You may distribute the Software or Adaptations but you must give appropriate credit to Licensor by citing the following publication:   
+
+Packer JS, Maxwell EK, O’Dushlaine C, et al. (2015)  CLAMMS: a scalable algorithm for calling common and rare copy number variants from exome sequencing data.  Bioinformatics.
+
+Your citation of that publication does not in any way suggest that the Licensor endorses you or your use.
+
+This license is subject to the following conditions:
+
+(i) The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software or Adaptations;
+(ii) you are not permitted to sublicense, and/or sell copies of the Software or Adaptations, and are not permitted to permit persons to whom the Software or Adaptations are furnished to sublicense, and/or sell copies of the Software or Adaptations; and
+(iii) you may not apply legal terms or technological measures that restrict others from doing anything this license permits. 
+
+Note that this license may not give you all of the permissions necessary for your intended use.  For example, other rights, such as publicity, privacy or moral rights, may limit how you use the material. 
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT REPRESENTATION OR WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT, AND LICENSOR EXPRESSLY DISCLAIMS ALL SUCH REPRESENTATION AND WARRANTIES. 
+
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR ADAPTATIONS OR THE USE IN THE SOFTWARE OR ADAPTATIONS.
+
+By downloading, obtaining or otherwise using the Software or Adaptations, you thereby accept and agree to be bound by the terms of this license.

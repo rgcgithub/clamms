@@ -1,0 +1,7 @@
+*.o
+normalize_coverage
+fit_models
+call_cnv
+genotype
+gatk_coverage_to_bed
+
