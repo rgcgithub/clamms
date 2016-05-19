@@ -7,7 +7,7 @@ As per the title, CLAMMS (Copy number estimation using Lattice-Aligned Mixture M
 1. CLAMMS is suitable for calling CNVs across the whole allele frequency spectrum, not just rare CNVs. Previous tools require that each sample be compared to a reference panel of samples that are assumed to be diploid in any given region. This assumption does not hold in copy number polymorphic regions (where non-diploid alleles are not rare), leading to improper genotypes.
 1. CLAMMS can scale to datasets of tens or hundreds of thousands of samples. Apart from one short processing step (which takes ~30 seconds for 30,000 samples), each sample can be processed in parallel. Unlike previous tools, which have RAM requirements that scale linearly in the number of samples, each CLAMMS process uses a constant amount of RAM regardless of the number of samples.
 
-Our paper (Packer JS, Maxwell EK, O’Dushlaine C, et al. (2015)  CLAMMS: a scalable algorithm for calling common and rare copy number variants from exome sequencing data. Bioinformatics.) describes the methods of CLAMMS, as well as the results of validation experiments we used to evaluate its performance in comparison to previous tools. Supplementary materials to the paper are available [here](http://rgc-clamms-public.s3.amazonaws.com/clamms_supplement.tar.gz).
+Our paper (Packer JS, Maxwell EK, O’Dushlaine C, et al. (2015) CLAMMS: a scalable algorithm for calling common and rare copy number variants from exome sequencing data. Bioinformatics 32 (1): 133-135.) [link](http://bioinformatics.oxfordjournals.org/content/32/1/133) describes the methods of CLAMMS, as well as the results of validation experiments we used to evaluate its performance in comparison to previous tools.
 
 Please note that CLAMMS is not intended to be used with whole-genome sequencing data or data from cancer samples.
 
@@ -32,23 +32,23 @@ To generate `windows.bed`, you will need four input files:
 1. targets.bed — a BED file listing your exome capture regions.
 1. genome.fa — an indexed FASTA file for the reference genome you are using.
 1. mappability.bed — a BED file listing mappability scores across the genome. More detail on this below.
-1. clamms_special_regions.bed — download [here](http://rgc-clamms-public.s3.amazonaws.com/clamms_special_regions.bed).
+1. clamms_special_regions.bed — provided in the data/ directory with the code distribution (hg19 coordinates).
 
 The chromosome names in the BED files and in the genome index should not have "chr" preceding the number/letter (i.e. "1" instead of "chr1"). The BED files must be sorted using either `bedtools sort` or `sort -k1,1 -k2,2n`.
 
 The FASTA index should be generated from the raw FASTA file using [BWA](http://bio-bwa.sourceforge.net/bwa.shtml): `bwa index genome.fa`.
 
-The mappability score for a given base is one divided by the number of locations in the genome that the k-mer starting at that base aligns to (k = the length of your reads), with up to two mismatches allowed (see [here](http://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability) for more details). You can download mappability tracks for 75-mers or 100-mers on the GRCh37 human reference genome from the following locations (uncompress them using `gunzip`):
+The mappability score for a given base is one divided by the number of locations in the genome that the k-mer starting at that base aligns to (k = the length of your reads), with up to two mismatches allowed (see [here](http://genome.ucsc.edu/cgi-bin/hgFileUi?db=hg19&g=wgEncodeMapability) for more details). You can download mappability tracks for 75-mers or 100-mers on the GRCh37 human reference genome from the link above and convert them to CLAMMS-ready BED files (requires `bigWigToWig` tool from [UCSC](http://genome.ucsc.edu/goldenpath/help/bigWig.html)):
 
-    wget http://rgc-clamms-public.s3.amazonaws.com/mappability-tracks/75mer_mappability.bed.gz
-    wget http://rgc-clamms-public.s3.amazonaws.com/mappability-tracks/100mer_mappability.bed.gz
-
+    wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/wgEncodeCrgMapabilityAlign75mer.bigWig
+    bigWigToWig wgEncodeCrgMapabilityAlign75mer.bigWig wgEncodeCrgMapabilityAlign75mer.wig
+    grep -v '^#' wgEncodeCrgMapabilityAlign75mer.wig | sed 's/^chr//g' > mappability.bed
 
 Once you have the input files ready, you can generate `windows.bed` with the following commands. This will take ~5 minutes. Note that the preprocessing script `annotate_windows.sh` requires [Bedtools](http://bedtools.readthedocs.org) to be installed and in your system PATH.
 
     export INSERT_SIZE=200
     chmod +x $CLAMMS_DIR/annotate_windows.sh
-    $CLAMMS_DIR/annotate_windows.sh targets.bed genome.fa mappability.bed $INSERT_SIZE clamms_special_regions.bed >windows.bed
+    $CLAMMS_DIR/annotate_windows.sh targets.bed genome.fa mappability.bed $INSERT_SIZE $CLAMMS_DIR/data/clamms_special_regions.bed >windows.bed
 
 The `INSERT_SIZE` variable should be set to a value that is a little bit larger than the average insert size for your sequencing process (so that most reads will come from inserts of size <= this value). For example, we use `INSERT_SIZE = 200` when our mean insert size is ~150 bp. If a window is smaller than `INSERT_SIZE`, it is extended to the length of `INSERT_SIZE` for purposes of calculating it's GC content. This is because according to [Benjamini and Speed (2012)](http://www.ncbi.nlm.nih.gov/pubmed/22323520), GC coverage bias is best estimated based on the GC content of the insert, not the individual reads.
 
@@ -201,7 +201,7 @@ To identify a custom reference panel for every sample efficiently, CLAMMS collec
 
 We have provided an example data set and steps to identify the 20-nearest neighbors in R.
 
-    wget http://rgc-clamms-public.s3.amazonaws.com/example_qcs.Rdata
+    $CLAMMS_DIR/data/example_qcs.Rdata
 
 The following code assumes that a data frame has been constructed with sample IDs in the first column and raw QC metrics in the subsequent columns, with one sample per row. It also requires the `FNN` package described above.
 
