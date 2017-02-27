@@ -14,7 +14,7 @@
 
 // read chromosome id into unsigned char
 // and skip the next character after
-// (':' in coverage input, '\t' in windows input)
+// (':' in GATK coverage input, '\t' in samtools depth and windows input)
 int read_chr(FILE *input, unsigned char *chr) {
     int tmp = getc(input);
     if (tmp == EOF) return 0;
@@ -26,6 +26,11 @@ int read_chr(FILE *input, unsigned char *chr) {
         tmp = getc(input);
         if (tmp == T_ASCII) getc(input);
         return 1;
+    }
+    if (tmp < DIGIT_ASCII_OFFSET || tmp > (DIGIT_ASCII_OFFSET+9)) {
+        *chr = 0;
+        tmp = getc(input);
+        return 2; // Illegal chromosome character. Likely the header.
     }
 
     tmp -= DIGIT_ASCII_OFFSET;
@@ -120,6 +125,7 @@ int main(int argc, char *argv[]) {
     int *window_start  = (int *) malloc(n_windows * sizeof(int));
     int *window_end    = (int *) malloc(n_windows * sizeof(int));
     double *window_cov = (double *) malloc(n_windows * sizeof(double));
+    memset(window_cov, 0.0, n_windows*sizeof(double));
 
     i = 0;
     while (read_chr(windows, window_chr+i)) {
@@ -136,12 +142,19 @@ int main(int argc, char *argv[]) {
     last_chr = 0;
     int locus, read_depth;
     int cur_window, tot_cov, n_bases;
-    skip_to_end_of_line(base_cov);
+    n_bases = 0;
+    // Check for header, advance line if it exists
+    if (read_chr(base_cov, &chr) < 2)
+        rewind(base_cov);
+    else
+        skip_to_end_of_line(base_cov);
     while (read_chr(base_cov, &chr)) {
         fscanf(base_cov, "%d\t%d", &locus, &read_depth);
         skip_to_end_of_line(base_cov);
         
         if (chr != last_chr) {
+            if (n_bases > 0 && window_cov[cur_window] == 0.0)
+                window_cov[cur_window] = (double) tot_cov / (double) n_bases;
             last_chr = chr;
             cur_window = chr_start_idx[chr];
             tot_cov = 0; n_bases = 0;
@@ -150,7 +163,10 @@ int main(int argc, char *argv[]) {
         }
 
         if (locus > window_end[cur_window]) {
-            window_cov[cur_window] = (double) tot_cov / (double) n_bases;
+            if (n_bases == 0)
+                window_cov[cur_window] = 0.;
+            else
+                window_cov[cur_window] = (double) tot_cov / (double) n_bases;
             cur_window++;
             while (locus > window_end[cur_window] && chr == window_chr[cur_window])
                 cur_window++;
@@ -162,6 +178,8 @@ int main(int argc, char *argv[]) {
         tot_cov += read_depth;
         n_bases++;
     }
+    if (n_bases > 0 && window_cov[cur_window] == 0.0)
+        window_cov[cur_window] = (double) tot_cov / (double) n_bases;
 
     print_chr(1, window_chr, window_start, window_end, window_cov, chr_start_idx);
     for (i = 10; i <= 19; i++)

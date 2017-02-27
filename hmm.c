@@ -79,9 +79,16 @@ int expected_copy_number(char sex, unsigned char chr) {
         return DIPLOID;
 }
 
-double gc_confidence_term(double gc) {
-    if (gc < 0.3 || gc > 0.7) return 0.0;
-    double x = 5.0 * fabs(gc - 0.5);
+double gc_confidence_term(double gc, double gc_min, double gc_max) {
+    if (gc < gc_min || gc > gc_max) return 0.0;
+    double constant;
+    if (gc <= 0.5) {
+        constant = 1.0/( 0.5 - gc_min + GC_BUFFER );
+    }
+    else if (gc > 0.5) {
+        constant = 1.0/( gc_max - 0.5 + GC_BUFFER );
+    }
+    double x = constant * fabs(gc - 0.5);
     double x_2  = x    * x;
     double x_4  = x_2  * x_2;
     double x_8  = x_4  * x_4;
@@ -251,6 +258,8 @@ void read_coverage_data(FILE *input,
 }
 
 void calc_base_model_conf(int n_windows,
+                          double gc_min,
+                          double gc_max,
                           unsigned char *window_chr,
                           int *window_start,
                           int *window_end,
@@ -267,7 +276,7 @@ void calc_base_model_conf(int n_windows,
         if (prev_window != -1) prev_window_end   = window_end[prev_window];
         if (next_window != -1) next_window_start = window_start[next_window];
         
-        model_conf[i] = gc_confidence_term(window_gc[i]);
+        model_conf[i] = gc_confidence_term(window_gc[i], gc_min, gc_max);
         if (window_start[i] == prev_window_end || window_end[i] == next_window_start)
             model_conf[i] = fmin(model_conf[i], 2.0/3.0);
     }

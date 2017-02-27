@@ -15,6 +15,8 @@
 typedef struct {
     double cnv_rate;
     double mean_cnv_length;
+    double min_gc;
+    double max_gc;
     char sex;
 } Options;
 
@@ -48,6 +50,8 @@ Options parse_args(int argc, char *argv[], int arg_start) {
     Options options;
     options.cnv_rate = 3.0e-8;
     options.mean_cnv_length = 3.5e+4;
+    options.min_gc = 0.3;
+    options.max_gc = 0.7;
     options.sex = '\0';
 
     int i;
@@ -61,6 +65,16 @@ Options parse_args(int argc, char *argv[], int arg_start) {
             if (i+1 >= argc) missing_value_error(argv[i]);
             options.mean_cnv_length = strtod(argv[i+1], NULL);
             if(options.mean_cnv_length <= 0.0)
+                invalid_value_error(argv[i]);
+        } else if (strcmp(argv[i], "--min_gc") == 0) {
+            if (i+1 >= argc) missing_value_error(argv[i]);
+            options.min_gc = strtod(argv[i+1], NULL);
+            if (options.min_gc < 0.0 || options.min_gc > 1.0)
+                invalid_value_error(argv[i]);
+        } else if (strcmp(argv[i], "--max_gc") == 0) {
+            if (i+1 >= argc) missing_value_error(argv[i]);
+            options.max_gc = strtod(argv[i+1], NULL);
+            if (options.max_gc < 0.0 || options.max_gc > 1.0)
                 invalid_value_error(argv[i]);
         } else if (strcmp(argv[i], "--sex") == 0) {
             if (i+1 >= argc) missing_value_error(argv[i]);
@@ -435,6 +449,10 @@ int main(int argc, char *argv[]) {
         fputs("                       Default = 3.0e-8.\n", stderr);
         fputs("  --mean_cnv_length    Mean of prior distribution for CNV lengths (in b.p.)\n", stderr);
         fputs("                       Default = 3.5e+4.\n", stderr);
+        fputs("  --min_gc             If you used a non-default --min_gc for 'normalize_coverage' and 'fit_models'\n", stderr);
+        fputs("                       then you must use it again here.\n", stderr);
+        fputs("  --max_gc             If you used a non-default --max_gc for 'normalize_coverage' and 'fit_models'\n", stderr);
+        fputs("                       then you must use it again here.\n", stderr);
         fputs("  --sex                'M' or 'F'\n", stderr);
         fputs("                       Default = unspecified (no calls on sex chr).\n\n", stderr);
         return 1;
@@ -473,7 +491,7 @@ int main(int argc, char *argv[]) {
     read_coverage_data(coverage, n_windows,
                        window_chr, window_start, window_end,
                        cov, mu_dip);
-    calc_base_model_conf(n_windows,
+    calc_base_model_conf(n_windows, options.min_gc, options.max_gc,
                          window_chr, window_start, window_end,
                          max_cn, window_gc, model_conf);
     calc_sample_specific_model_conf(n_windows, options.sex, window_chr,

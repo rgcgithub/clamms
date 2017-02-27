@@ -52,6 +52,45 @@ Once you have the input files ready, you can generate `windows.bed` with the fol
 
 The `INSERT_SIZE` variable should be set to a value that is a little bit larger than the average insert size for your sequencing process (so that most reads will come from inserts of size <= this value). For example, we use `INSERT_SIZE = 200` when our mean insert size is ~150 bp. If a window is smaller than `INSERT_SIZE`, it is extended to the length of `INSERT_SIZE` for purposes of calculating it's GC content. This is because according to [Benjamini and Speed (2012)](http://www.ncbi.nlm.nih.gov/pubmed/22323520), GC coverage bias is best estimated based on the GC content of the insert, not the individual reads.
 
+#### Troubleshooting windows.bed file generation
+If you have trouble generating the windows.bed file, your input files are likely improperly formatted or have inconsistencies. A few things you should check:
+
+* All BED files are sorted properly, using `sort -k1,1 -k2,2n`. This sorts by chromosome name (string sort) then by start position (numeric sort). You should re-sort all files in the event that your system locale settings differ from those that were used to sort the externally sourced input files.
+* Chromosome naming consistency: Make sure that all chromosomes are named consistently (i.e. chromosome 1 is "1", not "chr1"). This must be the case in all input files, including the genome.fa input file.
+
+Here is a simple test you can run on your input files to make sure they are consistent and sorted properly:
+
+    cut -f 1 targets.bed | uniq
+    cut -f 1 mappability.bed | uniq
+    cut -f 1 clamms_special_regions.bed | uniq
+
+All of these should return the same chromosome names and sort order:
+
+    1
+    10
+    ...
+    19
+    2
+    20
+    21
+    22
+    3
+    4
+    ...
+    9
+    X
+    Y
+
+Also check the chromosome names in the genome FASTA file (sort order is not important):
+
+    grep '^>' -m 24 genome.fa
+    >1
+    >2
+    ...
+    >22
+    >X
+    >Y
+
 ## Computing depths of coverage
 
 You will need a BED file for each of your samples listng the mean depth of coverage at each of the exact windows listed in `windows.bed`. The coverage files must be named in the following format: `sample_name.coverage.bed`
@@ -270,6 +309,8 @@ To see how well the *k*-nearest neighbors fit for each sample, we compute the di
         $CLAMMS_DIR/fit_models $SAMPLE.ref.panel.txt windows.bed >$SAMPLE.models.bed
         $CLAMMS_DIR/call_cnv $SAMPLE.norm.cov.bed $SAMPLE.models.bed --sex $SEX >$SAMPLE.cnv.bed
     done
+
+To alter the sensitivity/specificity profile of CLAMMS CNV calls, modify the `call_cnv --cnv_rate` parameter. The default (3.0e-8) is tuned for specificity, but can be increased to improve sensitivity (particularly for small CNVs) at the cost of an increased FDR.
 
 ## Visualizing CNVs for a sample
 

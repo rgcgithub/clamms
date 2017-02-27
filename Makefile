@@ -1,4 +1,4 @@
-all: normalize_coverage fit_models call_cnv gatk_coverage_to_bed
+all: normalize_coverage fit_models call_cnv sam_gatk_coverage_to_bed
 
 utils.o: utils.c
 	gcc -c utils.c
@@ -24,11 +24,11 @@ call_cnv: call_cnv.o utils.o hmm.o
 call_cnv.o: call_cnv.c utils.h hmm.h
 	gcc -c call_cnv.c
 
-gatk_coverage_to_bed: gatk_coverage_to_bed.o
-	gcc gatk_coverage_to_bed.o -o gatk_coverage_to_bed
+sam_gatk_coverage_to_bed: sam_gatk_coverage_to_bed.o
+	gcc sam_gatk_coverage_to_bed.o -o sam_gatk_coverage_to_bed
 
-gatk_coverage_to_bed.o: gatk_coverage_to_bed.c
-	gcc -c gatk_coverage_to_bed.c
+sam_gatk_coverage_to_bed.o: sam_gatk_coverage_to_bed.c
+	gcc -c sam_gatk_coverage_to_bed.c
 
 clean:
-	rm -rf *.o normalize_coverage fit_models call_cnv gatk_coverage_to_bed
+	rm -rf *.o normalize_coverage fit_models call_cnv sam_gatk_coverage_to_bed

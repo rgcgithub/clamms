@@ -26,6 +26,9 @@
 #define FORWARD   1
 #define BACKWARD -1
 
+// variables for defining GC-content weights
+#define GC_BUFFER 0.01
+
 int get_next_window(int window, int n_windows,
                     unsigned char *window_chr, char *max_cn);
 int get_prev_window(int window, int n_windows,
@@ -54,6 +57,8 @@ void read_coverage_data(FILE *input,
                         double *cov,
                         double *mu_dip);
 void calc_base_model_conf(int n_windows,
+                          double gc_min,
+                          double gc_max,
                           unsigned char *window_chr,
                           int *window_start,
                           int *window_end,
