@@ -7,11 +7,14 @@ As per the title, CLAMMS (Copy number estimation using Lattice-Aligned Mixture M
 1. CLAMMS is suitable for calling CNVs across the whole allele frequency spectrum, not just rare CNVs. Previous tools require that each sample be compared to a reference panel of samples that are assumed to be diploid in any given region. This assumption does not hold in copy number polymorphic regions (where non-diploid alleles are not rare), leading to improper genotypes.
 1. CLAMMS can scale to datasets of tens or hundreds of thousands of samples. Apart from one short processing step (which takes ~30 seconds for 30,000 samples), each sample can be processed in parallel. Unlike previous tools, which have RAM requirements that scale linearly in the number of samples, each CLAMMS process uses a constant amount of RAM regardless of the number of samples.
 
-Our paper (Packer JS, Maxwell EK, O’Dushlaine C, et al. (2015) CLAMMS: a scalable algorithm for calling common and rare copy number variants from exome sequencing data. Bioinformatics 32 (1): 133-135.) [link](http://bioinformatics.oxfordjournals.org/content/32/1/133) describes the methods of CLAMMS, as well as the results of validation experiments we used to evaluate its performance in comparison to previous tools.
-
 Please note that CLAMMS is not intended to be used with whole-genome sequencing data or data from cancer samples.
 
 The rest of this README will give instructions on how to use CLAMMS.
+
+## Related Publications
+
+* Methods paper: Packer JS, Maxwell EK, O?~@~YDushlaine C, et al. (2015) CLAMMS: a scalable algorithm for calling common and rare copy number variants from exome sequencing data. Bioinformatics 32 (1): 133-135.) [link](http://bioinformatics.oxfordjournals.org/content/32/1/133) describes the methods of CLAMMS, as well as the results of validation experiments we used to evaluate its performance in comparison to previous tools.
+* 50K DiscovEHR Study CNV analysis (pre-print): Maxwell EK, Packer JS, O'Dushlaine C, McCarthy SE, Hare-Harris A, Gonzaga-Jauregui C, et al. (2017) Profiling copy number variation and disease associations from 50,726 DiscovEHR Study exomes. bioRxiv. Survey of CLAMMS CNVs from ~50k DiscovEHR study exomes with paired EHR phenotype associations. See supplemental materials for additional details on CLAMMS validation and quality-control procedures. [http://biorxiv.org/content/early/2017/03/22/119461] (http://biorxiv.org/content/early/2017/03/22/119461)
 
 ## Getting Started
 
