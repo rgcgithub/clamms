@@ -26,7 +26,7 @@ First, clone the CLAMMS Github repository and compile the code:
 
 Set the environment variable `CLAMMS_DIR` to the appropriate path using the `export` command
 
-    export $CLAMMS_DIR=/path/to/clamms
+    export CLAMMS_DIR=/path/to/clamms
 
 Now you will need to generate a file `windows.bed`. This file will list windows along the exome for which CLAMMS will estimate copy numbers, along with metadata for those windows. Most windows will simply be exons from your exome capture design, but large exons (>= 1000 bp) will be split up into equally-sized calling windows of ~500 bp.
 
