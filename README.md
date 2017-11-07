@@ -96,7 +96,7 @@ Also check the chromosome names in the genome FASTA file (sort order is not impo
 
 ## Computing depths of coverage
 
-You will need a BED file for each of your samples listng the mean depth of coverage at each of the exact windows listed in `windows.bed`. The coverage files must be named in the following format: `sample_name.coverage.bed`
+You will need a BED file for each of your samples listing the mean depth of coverage at each of the exact windows listed in `windows.bed`. The coverage files must be named in the following format: `sample_name.coverage.bed`
 
 The sample depth-of-coverage files can be generated from BAM files using [Samtools](http://www.htslib.org/):
 
