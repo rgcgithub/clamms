@@ -15,7 +15,7 @@ SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cut -f -4 $cov >tmp.$sample.cov.txt
 
 awk '{
-    if ($4 == 0) {
+    if ($4 >= 0) {
         n++;
         window[n] = $1 "\t" $2 "\t" $3;
         start[n] = $2;
