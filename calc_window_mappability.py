@@ -66,7 +66,7 @@ while True:
         if value[2] >= window[2]:
             break
 
-    print "%s\t%d\t%d%s\t%.3f" % (window[0], window[1], window[2], window[3],
+    print "%s\t%d\t%d\t%s\t%.3f" % (window[0], window[1], window[2], window[3],
                                   tot_val/tot_bp if tot_bp > 0 else 0.0)
 
 window_file.close()
